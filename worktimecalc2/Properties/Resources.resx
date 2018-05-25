@@ -133,6 +133,9 @@
   <data name="html" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\html.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="itextsharp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\itextsharp.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="logoclock" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\logoclock.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -147,6 +150,9 @@
   </data>
   <data name="plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\plus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SharpZipLib" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SharpZipLib.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="txt" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\txt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

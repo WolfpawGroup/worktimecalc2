@@ -5,6 +5,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Linq;
+using iTextSharp.text.pdf;
 
 namespace worktimecalc2
 {
@@ -33,7 +34,9 @@ namespace worktimecalc2
 
         public String rx_proper, rx_vacsic, rx_daysoff, rx_nothing;
 
-        public Form1(String[] args)
+		List<string> breakobjects = new List<string>();
+
+		public Form1(String[] args)
         {
             InitializeComponent();
             Load += Form1_Load;
@@ -79,7 +82,17 @@ namespace worktimecalc2
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Icon = Properties.Resources.logoclock;
+			if (!File.Exists("itextsharp.dll"))
+			{
+				File.WriteAllBytes("itextsharp.dll", Properties.Resources.itextsharp);
+			}
+
+			if (!File.Exists("SharpZipLib.dll"))
+			{
+				File.WriteAllBytes("SharpZipLib.dll", Properties.Resources.SharpZipLib);
+			}
+
+			Icon = Properties.Resources.logoclock;
 
             //Backups
             rx_proper = regx_proper;
@@ -97,7 +110,24 @@ namespace worktimecalc2
             daily = new TimeSpan((int)num_DailyH.Value, (int)num_DailyM.Value, 0);
             
             if (!Properties.Settings.Default.s_LastStyleFlopped) { flipDisplay(); }
-        }
+
+			breakobjects.AddRange(Properties.Settings.Default.s_dayNames.Split(','));
+			breakobjects.Add("(óra)");
+			breakobjects.Add("(nap)");
+			breakobjects.Add("Betegszabadság");
+			breakobjects.Add("Túlóra");
+			breakobjects.Add("Nap Munkaórák");
+			breakobjects.Add("Fizetési");
+			breakobjects.Add("Alkalmazott");
+			breakobjects.Add("száma");
+			breakobjects.Add("Szabadság");
+			breakobjects.Add("Felettes");
+			breakobjects.Add("Készenlét");
+			breakobjects.Add("Home Office");
+			breakobjects.Add("Kiküldetés");
+			breakobjects.Add("Összesen");
+			breakobjects.Add("e-radius");
+		}
 
         public void flipDisplay()
         {
@@ -202,6 +232,207 @@ namespace worktimecalc2
             graph.workTime = daily.TotalHours;
             graph.ShowDialog();
         }
+
+		#region Fields
+
+		#region _numberOfCharsToKeep
+		/// <summary>
+		/// The number of characters to keep, when extracting text.
+		/// </summary>
+		private static int _numberOfCharsToKeep = 15;
+		#endregion
+
+		#endregion
+
+		#region CheckToken
+		/// <summary>
+		/// Check if a certain 2 character token just came along (e.g. BT)
+		/// </summary>
+		/// <param name="search">the searched token</param>
+		/// <param name="recent">the recent character array</param>
+		/// <returns></returns>
+		private bool CheckToken(string[] tokens, char[] recent)
+		{
+			foreach (string token in tokens)
+			{
+				if ((recent[_numberOfCharsToKeep - 3] == token[0]) &&
+					(recent[_numberOfCharsToKeep - 2] == token[1]) &&
+					((recent[_numberOfCharsToKeep - 1] == ' ') ||
+					(recent[_numberOfCharsToKeep - 1] == 0x0d) ||
+					(recent[_numberOfCharsToKeep - 1] == 0x0a)) &&
+					((recent[_numberOfCharsToKeep - 4] == ' ') ||
+					(recent[_numberOfCharsToKeep - 4] == 0x0d) ||
+					(recent[_numberOfCharsToKeep - 4] == 0x0a))
+					)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		#endregion
+
+		#region ExtractTextFromPDFBytes
+		/// <summary>
+		/// This method processes an uncompressed Adobe (text) object 
+		/// and extracts text.
+		/// </summary>
+		/// <param name="input">uncompressed</param>
+		/// <returns></returns>
+		private string ExtractTextFromPDFBytes(byte[] input)
+		{
+			if (input == null || input.Length == 0) return "";
+
+			try
+			{
+				string resultString = "";
+
+				// Flag showing if we are we currently inside a text object
+				bool inTextObject = false;
+
+				// Flag showing if the next character is literal 
+				// e.g. '\\' to get a '\' character or '\(' to get '('
+				bool nextLiteral = false;
+
+				// () Bracket nesting level. Text appears inside ()
+				int bracketDepth = 0;
+
+				// Keep previous chars to get extract numbers etc.:
+				char[] previousCharacters = new char[_numberOfCharsToKeep];
+				for (int j = 0; j < _numberOfCharsToKeep; j++) previousCharacters[j] = ' ';
+
+
+				for (int i = 0; i < input.Length; i++)
+				{
+					char c = (char)input[i];
+
+					if (inTextObject)
+					{
+						// Position the text
+						if (bracketDepth == 0)
+						{
+							if (CheckToken(new string[] { "TD", "Td" }, previousCharacters))
+							{
+								resultString += "\n\r";
+							}
+							else
+							{
+								if (CheckToken(new string[] { "'", "T*", "\"" }, previousCharacters))
+								{
+									resultString += "\n";
+								}
+								else
+								{
+									if (CheckToken(new string[] { "Tj" }, previousCharacters))
+									{
+										resultString += " ";
+									}
+								}
+							}
+						}
+
+						// End of a text object, also go to a new line.
+						if (bracketDepth == 0 &&
+							CheckToken(new string[] { "ET" }, previousCharacters))
+						{
+
+							inTextObject = false;
+							resultString += " ";
+						}
+						else
+						{
+							// Start outputting text
+							if ((c == '(') && (bracketDepth == 0) && (!nextLiteral))
+							{
+								bracketDepth = 1;
+							}
+							else
+							{
+								// Stop outputting text
+								if ((c == ')') && (bracketDepth == 1) && (!nextLiteral))
+								{
+									bracketDepth = 0;
+								}
+								else
+								{
+									// Just a normal text character:
+									if (bracketDepth == 1)
+									{
+										// Only print out next character no matter what. 
+										// Do not interpret.
+										if (c == '\\' && !nextLiteral)
+										{
+											nextLiteral = true;
+										}
+										else
+										{
+											if (((c >= ' ') && (c <= '~')) ||
+												((c >= 128) && (c < 255)))
+											{
+												resultString += c.ToString();
+											}
+
+											nextLiteral = false;
+										}
+									}
+								}
+							}
+						}
+					}
+
+					// Store the recent characters for 
+					// when we have to go back for a checking
+					for (int j = 0; j < _numberOfCharsToKeep - 1; j++)
+					{
+						previousCharacters[j] = previousCharacters[j + 1];
+					}
+					previousCharacters[_numberOfCharsToKeep - 1] = c;
+
+					// Start of a text object
+					if (!inTextObject && CheckToken(new string[] { "BT" }, previousCharacters))
+					{
+						inTextObject = true;
+					}
+				}
+				return resultString;
+			}
+			catch
+			{
+				return "";
+			}
+		}
+		#endregion
+		
+		public void parsePDF(string inFileName)
+		{
+			//TODO: ParsePDF
+			PdfReader reader = new PdfReader(inFileName);
+			int totalLen = 68;
+			float charUnit = ((float)totalLen) / (float)reader.NumberOfPages;
+
+			string pages = "";
+
+			for (int page = 1; page <= reader.NumberOfPages; page++)
+			{
+				pages += ExtractTextFromPDFBytes(reader.GetPageContent(page)) + " ";
+			}
+
+			foreach (string s in breakobjects)
+			{
+				pages = pages.ToLower().Replace(s.ToLower(), "\r\n" + s);
+			}
+
+			rtb_Report_01.Text = pages;
+
+			//File.WriteAllText("test.txt", pages);
+
+			/*
+			PDFParser pdfp = new PDFParser();
+			pdfp.ExtractText(inFileName, "test2.txt");
+			*/
+
+			
+		}
 
         private void p_plusminus_MouseEnter(object sender, EventArgs e)
         {
@@ -978,6 +1209,15 @@ namespace worktimecalc2
 		{
 			f_Help fh = new f_Help();
 			fh.ShowDialog();
+		}
+
+		private void btn_OpenPDF_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog ofd = new OpenFileDialog();
+			if(ofd.ShowDialog() == DialogResult.OK)
+			{
+				parsePDF(ofd.FileName);
+			}
 		}
 
 		private void btn_ReloadLast_Click(object sender, EventArgs e)

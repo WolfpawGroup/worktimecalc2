@@ -92,6 +92,7 @@
 			this.tb_Search = new System.Windows.Forms.TextBox();
 			this.label15 = new System.Windows.Forms.Label();
 			this.label14 = new System.Windows.Forms.Label();
+			this.btn_OpenPDF = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.sc1)).BeginInit();
 			this.sc1.Panel1.SuspendLayout();
 			this.sc1.Panel2.SuspendLayout();
@@ -345,6 +346,7 @@
 			// 
 			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panel1.Controls.Add(this.btn_OpenPDF);
 			this.panel1.Controls.Add(this.btn_Report_Txt);
 			this.panel1.Controls.Add(this.btn_Report_HTML);
 			this.panel1.Controls.Add(this.btn_Help);
@@ -364,7 +366,7 @@
 			this.btn_Report_Txt.Enabled = false;
 			this.btn_Report_Txt.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.btn_Report_Txt.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-			this.btn_Report_Txt.Location = new System.Drawing.Point(95, 1);
+			this.btn_Report_Txt.Location = new System.Drawing.Point(136, 1);
 			this.btn_Report_Txt.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
 			this.btn_Report_Txt.Name = "btn_Report_Txt";
 			this.btn_Report_Txt.Size = new System.Drawing.Size(25, 25);
@@ -379,7 +381,7 @@
 			this.btn_Report_HTML.Enabled = false;
 			this.btn_Report_HTML.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.btn_Report_HTML.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-			this.btn_Report_HTML.Location = new System.Drawing.Point(66, 1);
+			this.btn_Report_HTML.Location = new System.Drawing.Point(107, 1);
 			this.btn_Report_HTML.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
 			this.btn_Report_HTML.Name = "btn_Report_HTML";
 			this.btn_Report_HTML.Size = new System.Drawing.Size(25, 25);
@@ -416,7 +418,7 @@
 			// btn_ReloadLast
 			// 
 			this.btn_ReloadLast.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-			this.btn_ReloadLast.Location = new System.Drawing.Point(30, 1);
+			this.btn_ReloadLast.Location = new System.Drawing.Point(28, 1);
 			this.btn_ReloadLast.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
 			this.btn_ReloadLast.Name = "btn_ReloadLast";
 			this.btn_ReloadLast.Size = new System.Drawing.Size(25, 25);
@@ -798,6 +800,20 @@
 			this.label14.TabIndex = 33;
 			this.label14.Text = "Keresés: ";
 			// 
+			// btn_OpenPDF
+			// 
+			this.btn_OpenPDF.BackgroundImage = global::worktimecalc2.Properties.Resources.pdf;
+			this.btn_OpenPDF.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+			this.btn_OpenPDF.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.btn_OpenPDF.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+			this.btn_OpenPDF.Location = new System.Drawing.Point(57, 2);
+			this.btn_OpenPDF.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+			this.btn_OpenPDF.Name = "btn_OpenPDF";
+			this.btn_OpenPDF.Size = new System.Drawing.Size(25, 25);
+			this.btn_OpenPDF.TabIndex = 5;
+			this.btn_OpenPDF.UseVisualStyleBackColor = true;
+			this.btn_OpenPDF.Click += new System.EventHandler(this.btn_OpenPDF_Click);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -920,6 +936,7 @@
 		private System.Windows.Forms.TextBox tb_Search;
 		private System.Windows.Forms.Label label15;
 		private System.Windows.Forms.Label label14;
+		private System.Windows.Forms.Button btn_OpenPDF;
 	}
 }
 

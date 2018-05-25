@@ -37,6 +37,12 @@
     <ApplicationIcon>Resources\logoclock.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="itextsharp">
+      <HintPath>..\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpZipLib">
+      <HintPath>..\SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
@@ -81,6 +87,7 @@
       <DependentUpon>f_Settingscs.cs</DependentUpon>
     </Compile>
     <Compile Include="obj_Times.cs" />
+    <Compile Include="PDFParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -151,6 +158,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\cogs-15.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SharpZipLib.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\itextsharp.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
